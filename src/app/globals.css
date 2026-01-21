@@ -1,26 +1,322 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* Dark elegant theme */
+  --background: #0A0A0F;
+  --surface: #12121A;
+  --surface-light: #1A1A24;
+  --primary: #D4AF37;
+  --primary-light: #E5C158;
+  --secondary: #F5E6D3;
+  --text-primary: #FFFFFF;
+  --text-muted: #94A3B8;
+  --text-light: #CBD5E1;
+  --border: rgba(212, 175, 55, 0.2);
+  --glow: rgba(212, 175, 55, 0.5);
+
+  --font-display: 'Cormorant Garamond', serif;
+  --font-script: 'Great Vibes', cursive;
+  --font-body: 'Inter', sans-serif;
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--surface);
+  --color-surface-light: var(--surface-light);
+  --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light);
+  --color-secondary: var(--secondary);
+  --color-text-primary: var(--text-primary);
+  --color-text-muted: var(--text-muted);
+  --color-text-light: var(--text-light);
+  --color-border: var(--border);
+
+  /* Liner animations */
+  --animate-liner-shine: liner-shine 2.5s ease-in-out infinite;
+  --animate-liner-sweep: liner-sweep 3s ease-in-out infinite;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* Liner shine animation for filled buttons */
+@keyframes liner-shine {
+  0% {
+    transform: translateX(-100%);
   }
+
+  50%,
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+/* Liner sweep animation for outline buttons */
+@keyframes liner-sweep {
+  0% {
+    transform: translateX(-100%);
+  }
+
+  50%,
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+.animate-liner-shine {
+  animation: liner-shine 2.5s ease-in-out infinite;
+}
+
+.animate-liner-sweep {
+  animation: liner-sweep 3s ease-in-out infinite;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--primary) var(--surface);
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+}
+
+*::-webkit-scrollbar-track {
+  background: var(--surface);
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 4px;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
   background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  color: var(--text-primary);
+  font-family: var(--font-body);
+  overflow-x: hidden;
+}
+
+/* Selection */
+::selection {
+  background: var(--primary);
+  color: var(--background);
+}
+
+/* Gold glow effect */
+.gold-glow {
+  box-shadow: 0 0 40px var(--glow);
+}
+
+.text-gold-glow {
+  text-shadow: 0 0 30px var(--glow);
+}
+
+/* Glass effect */
+.glass {
+  background: rgba(18, 18, 26, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+}
+
+/* Gradient border */
+.gradient-border {
+  position: relative;
+}
+
+.gradient-border::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  background: linear-gradient(135deg, var(--primary), transparent, var(--primary));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  border-radius: inherit;
+  pointer-events: none;
+}
+
+/* Animated underline */
+.animated-underline {
+  position: relative;
+}
+
+.animated-underline::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: var(--primary);
+  transition: width 0.3s ease;
+}
+
+.animated-underline:hover::after {
+  width: 100%;
+}
+
+/* Page transition */
+.page-transition {
+  animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Floating animation */
+@keyframes float {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Shimmer effect */
+@keyframes shimmer {
+  0% {
+    background-position: -200% center;
+  }
+
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(90deg,
+      var(--primary) 0%,
+      var(--primary-light) 50%,
+      var(--primary) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmer 3s linear infinite;
+}
+
+/* Animated Liner Button Effect */
+.btn-liner {
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.btn-liner::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 2px;
+  border-radius: inherit;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      transparent 25%,
+      var(--primary) 50%,
+      transparent 75%,
+      transparent 100%);
+  background-size: 400% 100%;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  animation: liner-sweep 3s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes liner-sweep {
+  0% {
+    background-position: 200% center;
+  }
+
+  100% {
+    background-position: -200% center;
+  }
+}
+
+/* Liner effect for filled buttons */
+.btn-liner-filled {
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-liner-filled::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg,
+      transparent 0%,
+      rgba(255, 255, 255, 0.4) 50%,
+      transparent 100%);
+  animation: liner-shine 2.5s ease-in-out infinite;
+  pointer-events: none;
+}
+
+@keyframes liner-shine {
+  0% {
+    left: -100%;
+  }
+
+  50%,
+  100% {
+    left: 100%;
+  }
+}
+
+/* Glowing liner for outline buttons */
+.btn-liner-glow {
+  position: relative;
+  overflow: visible;
+}
+
+.btn-liner-glow::after {
+  content: '';
+  position: absolute;
+  inset: -2px;
+  border-radius: inherit;
+  background: conic-gradient(from var(--liner-angle, 0deg),
+      transparent 0%,
+      var(--primary) 10%,
+      transparent 20%);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  padding: 2px;
+  animation: liner-rotate 3s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes liner-rotate {
+  0% {
+    --liner-angle: 0deg;
+    transform: rotate(0deg);
+  }
+
+  100% {
+    --liner-angle: 360deg;
+    transform: rotate(360deg);
+  }
 }

@@ -1,0 +1,232 @@
+'use client';
+
+import { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { motion } from 'motion/react';
+import { ChevronDown } from 'lucide-react';
+import Image from 'next/image';
+
+gsap.registerPlugin(ScrollTrigger);
+
+export default function Hero() {
+  const heroRef = useRef<HTMLDivElement>(null);
+  const imageRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!heroRef.current || !imageRef.current) return;
+
+    // Parallax effect on scroll
+    gsap.to(imageRef.current, {
+      yPercent: 30,
+      ease: 'none',
+      scrollTrigger: {
+        trigger: heroRef.current,
+        start: 'top top',
+        end: 'bottom top',
+        scrub: true,
+      },
+    });
+
+    // Content fade out on scroll
+    if (contentRef.current) {
+      gsap.to(contentRef.current, {
+        opacity: 0,
+        y: -100,
+        ease: 'none',
+        scrollTrigger: {
+          trigger: heroRef.current,
+          start: 'top top',
+          end: '50% top',
+          scrub: true,
+        },
+      });
+    }
+
+    return () => {
+      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+    };
+  }, []);
+
+  return (
+    <section
+      ref={heroRef}
+      id="home"
+      className="relative h-screen w-full overflow-hidden flex items-center justify-center"
+    >
+      {/* Background Image with Parallax */}
+      <div
+        ref={imageRef}
+        className="absolute inset-0 w-full h-[130%] -top-[15%]"
+      >
+        <Image
+          src="https://lh3.googleusercontent.com/gps-cs-s/AG0ilSzhHLaEt94YtqJRIUJTyZeH4G96YcrMj0B8nZrJKgEvdfUJdZrWO_XfuYZmC2z29WLyzH1rZ3G6o6GBEeW7XztwACMu3VFlJjWKWBy7DPIV1pC7fuiTsx4ZAuP1q9dq1LaZtZm6Rw=s1920-k-no"
+          alt="Star Crescent Marriage Lawn - Wedding Venue"
+          fill
+          priority
+          className="object-cover"
+        />
+        {/* Overlay */}
+        <div 
+          className="absolute inset-0"
+          style={{ 
+            background: 'linear-gradient(to bottom, rgba(10, 10, 15, 0.6), rgba(10, 10, 15, 0.9))' 
+          }}
+        />
+      </div>
+
+      {/* Gold Glow Effects */}
+      <div 
+        className="absolute top-0 left-1/4 w-96 h-96 rounded-full blur-3xl opacity-20"
+        style={{ background: 'var(--primary)' }}
+      />
+      <div 
+        className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full blur-3xl opacity-20"
+        style={{ background: 'var(--primary)' }}
+      />
+
+      {/* Content */}
+      <div ref={contentRef} className="relative z-10 text-center px-6 max-w-4xl">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+          className="mb-4"
+        >
+          <span 
+            className="text-sm md:text-base tracking-[0.3em] uppercase"
+            style={{ color: 'var(--primary)' }}
+          >
+            Premium Wedding & Event Venue
+          </span>
+        </motion.div>
+
+        <motion.h1
+          initial={{ opacity: 0, y: 50 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="text-5xl md:text-7xl lg:text-8xl font-light mb-6 leading-tight"
+          style={{ 
+            fontFamily: 'var(--font-display)', 
+            color: 'var(--text-primary)' 
+          }}
+        >
+          Where Dreams
+          <br />
+          <span 
+            className="shimmer"
+            style={{ fontFamily: 'var(--font-script)', fontSize: '1.2em' }}
+          >
+            Begin
+          </span>
+        </motion.h1>
+
+        <motion.p
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.7 }}
+          className="text-lg md:text-xl mb-10 max-w-2xl mx-auto"
+          style={{ color: 'var(--text-muted)' }}
+        >
+          Experience the magic of unforgettable celebrations at Karachi&apos;s most 
+          elegant marriage lawn. Capacity for 600-1000 guests.
+        </motion.p>
+
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.9 }}
+          className="flex flex-col sm:flex-row gap-4 justify-center"
+        >
+          <motion.a
+            href="#contact"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
+            className="group relative overflow-hidden px-10 py-4 rounded-full font-medium cursor-pointer gold-glow"
+            style={{ 
+              backgroundColor: 'var(--primary)', 
+              color: 'var(--background)' 
+            }}
+          >
+            <motion.span
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%)',
+              }}
+              animate={{
+                x: ['-100%', '200%'],
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                repeatDelay: 1,
+              }}
+            />
+            <span className="relative z-10">Book Your Date</span>
+          </motion.a>
+          <motion.a
+            href="#gallery"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.98 }}
+            className="group relative overflow-hidden px-10 py-4 rounded-full font-medium border cursor-pointer"
+            style={{ 
+              borderColor: 'var(--primary)', 
+              color: 'var(--primary)' 
+            }}
+          >
+            <motion.span
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: 'linear-gradient(90deg, transparent 0%, var(--primary) 50%, transparent 100%)',
+                opacity: 0.4,
+              }}
+              animate={{
+                x: ['-100%', '200%'],
+              }}
+              transition={{
+                duration: 2.5,
+                repeat: Infinity,
+                ease: 'easeInOut',
+                repeatDelay: 0.5,
+              }}
+            />
+            <span className="relative z-10">View Gallery</span>
+          </motion.a>
+        </motion.div>
+      </div>
+
+      {/* Scroll Indicator */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5 }}
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+      >
+        <span 
+          className="text-xs tracking-widest uppercase"
+          style={{ color: 'var(--text-muted)' }}
+        >
+          Scroll
+        </span>
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 1.5, repeat: Infinity }}
+        >
+          <ChevronDown size={24} style={{ color: 'var(--primary)' }} />
+        </motion.div>
+      </motion.div>
+
+      {/* Decorative Lines */}
+      <div 
+        className="absolute left-0 top-1/4 w-px h-32"
+        style={{ background: 'linear-gradient(to bottom, transparent, var(--primary), transparent)' }}
+      />
+      <div 
+        className="absolute right-0 bottom-1/4 w-px h-32"
+        style={{ background: 'linear-gradient(to bottom, transparent, var(--primary), transparent)' }}
+      />
+    </section>
+  );
+}
