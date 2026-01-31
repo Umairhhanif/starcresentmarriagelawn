@@ -17,7 +17,7 @@ export default function Hero() {
   // Refs for animation targets
   const subtitleRef = useRef<HTMLDivElement>(null);
   const title1Ref = useRef<HTMLHeadingElement>(null);
-  const title2Ref = useRef<HTMLSpanElement>(null);
+  const title2Ref = useRef<HTMLDivElement>(null);
   const descriptionRef = useRef<HTMLParagraphElement>(null);
   const buttonsRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
