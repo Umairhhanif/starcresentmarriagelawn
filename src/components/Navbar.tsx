@@ -63,7 +63,7 @@ export default function Navbar() {
           {/* CTA Button */}
           <div className="hidden md:flex items-center gap-4">
             <motion.a
-              href="tel:+923458185651"
+              href="tel:+923001609087"
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.98 }}
               className="group relative overflow-hidden flex items-center gap-2 px-6 py-3 rounded-full border cursor-pointer"
@@ -129,7 +129,7 @@ export default function Navbar() {
                 </motion.a>
               ))}
               <motion.a
-                href="tel:+923458185651"
+                href="tel:+923001609087"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 whileHover={{ scale: 1.05 }}

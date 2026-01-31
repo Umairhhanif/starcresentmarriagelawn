@@ -4,7 +4,12 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Image from 'next/image';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { useEffect, useRef } from 'react';
 import FadeInView from './animations/FadeInView';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const galleryImages = [
   {
@@ -68,13 +73,68 @@ export default function Gallery() {
     }
   };
 
+  const containerRef = useRef<HTMLDivElement>(null);
+  const row1Ref = useRef<HTMLDivElement>(null);
+  const row2Ref = useRef<HTMLDivElement>(null);
+  const row3Ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+
+    const ctx = gsap.context(() => {
+      // Row 1 (Center) - moves slightly slower than scroll
+      if (row1Ref.current) {
+        gsap.to(row1Ref.current, {
+          y: 50,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1,
+          },
+        });
+      }
+
+      // Row 2 - moves faster up
+      if (row2Ref.current) {
+        gsap.to(row2Ref.current, {
+          y: -100,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1.2,
+          },
+        });
+      }
+
+      // Row 3 - moves even faster up
+      if (row3Ref.current) {
+        gsap.to(row3Ref.current, {
+          y: -150,
+          ease: 'none',
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: 'top bottom',
+            end: 'bottom top',
+            scrub: 1.5,
+          },
+        });
+      }
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
     <section 
       id="gallery" 
-      className="py-24 md:py-32"
+      className="py-24 md:py-32 overflow-hidden"
       style={{ backgroundColor: 'var(--surface)' }}
     >
-      <div className="max-w-7xl mx-auto px-6">
+      <div ref={containerRef} className="max-w-7xl mx-auto px-6">
         {/* Header */}
         <div className="text-center mb-16">
           <FadeInView>
@@ -111,7 +171,7 @@ export default function Gallery() {
         {/* Fountain Gallery - Cascading layout */}
         <div className="relative">
           {/* Center Hero Image */}
-          <div className="flex justify-center mb-8">
+          <div ref={row1Ref} className="flex justify-center mb-8">
             <FadeInView delay={0}>
               <motion.div
                 className="relative overflow-hidden rounded-2xl cursor-pointer"
@@ -146,7 +206,7 @@ export default function Gallery() {
           </div>
 
           {/* First Cascade Row - 2 images flowing outward */}
-          <div className="flex justify-center gap-6 mb-6">
+          <div ref={row2Ref} className="flex justify-center gap-6 mb-6">
             {[1, 2].map((idx, i) => (
               <FadeInView key={idx} delay={0.1 + i * 0.1}>
                 <motion.div
@@ -185,7 +245,7 @@ export default function Gallery() {
           </div>
 
           {/* Second Cascade Row - 3 images */}
-          <div className="flex justify-center gap-5 mb-6">
+          <div ref={row3Ref} className="flex justify-center gap-5 mb-6">
             {[3, 4, 5].map((idx, i) => (
               <FadeInView key={idx} delay={0.2 + i * 0.1}>
                 <motion.div

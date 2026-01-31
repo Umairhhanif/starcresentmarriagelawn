@@ -127,11 +127,11 @@ export default function Footer() {
               <li className="flex items-start gap-3">
                 <Phone size={18} style={{ color: 'var(--primary)' }} className="mt-1 flex-shrink-0" />
                 <a 
-                  href="tel:+923458185651"
+                  href="tel:+923001609087"
                   className="transition-colors cursor-pointer hover:underline"
                   style={{ color: 'var(--text-muted)' }}
                 >
-                  +92 345 8185651
+                  +92 300 1609087
                 </a>
               </li>
               <li className="flex items-start gap-3">

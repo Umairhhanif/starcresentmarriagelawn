@@ -343,11 +343,11 @@ export default function Contact() {
                     Phone
                   </h3>
                   <a 
-                    href="tel:+923458185651"
+                    href="tel:+923001609087"
                     className="text-lg hover:underline cursor-pointer"
                     style={{ color: 'var(--primary)' }}
                   >
-                    +92 345 8185651
+                    +92 300 1609087
                   </a>
                   <p style={{ color: 'var(--text-muted)' }}>Call for instant booking</p>
                 </div>
@@ -371,7 +371,7 @@ export default function Contact() {
                     WhatsApp
                   </h3>
                   <a 
-                    href="https://wa.me/923458185651"
+                    href="https://wa.me/923001609087"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-lg hover:underline cursor-pointer"
