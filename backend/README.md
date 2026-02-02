@@ -1,27 +1,34 @@
 ---
 title: Star Crescent Chatbot API
-emoji: 💬
+emoji: 🌙
 colorFrom: yellow
-colorTo: yellow
+colorTo: black
 sdk: docker
 pinned: false
-license: mit
-app_port: 7860
 ---
 
-# Star Crescent Marriage Lawn - Chatbot API
+# Star Crescent Marriage Lawn Chatbot API
 
-AI-powered chatbot backend for Star Crescent Marriage Lawn venue.
+AI-powered chatbot for Star Crescent Marriage Lawn wedding venue in Karachi, Pakistan.
 
-## Endpoints
+## Features
+
+- 🤖 AI Chatbot powered by Google Gemini 2.5 Flash
+- 📅 Booking management with function calling
+- 🔍 RAG (Retrieval Augmented Generation) for venue knowledge
+- 🗄️ PostgreSQL database with pgvector for embeddings
+
+## API Endpoints
 
 - `GET /` - Health check
-- `GET /health` - Health status
-- `GET /api/chat/status` - Check if chatbot is configured
-- `POST /api/chat` - Send message to chatbot
+- `GET /health` - Detailed health status
+- `GET /api/status` - Feature availability status
+- `POST /api/chat` - Chat with the AI assistant
 
 ## Environment Variables
 
-Set these in your Hugging Face Space secrets:
-- `GEMINI_API_KEY` - Your Google Gemini API key
-- `FRONTEND_URL` - Your frontend URL for CORS
+Required environment variables:
+- `GEMINI_API_KEY` - Google Gemini API key
+- `COHERE_API_KEY` - Cohere API key for embeddings
+- `DATABASE_URL` - PostgreSQL database URL
+- `FRONTEND_URL` - Frontend URL for CORS
