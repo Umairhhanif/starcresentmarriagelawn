@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 from config import FRONTEND_URL
 from routers.chat import router as chat_router
+from routers.bookings import router as bookings_router
 from models.schemas import HealthResponse
 from database import init_db, close_db, is_configured as db_configured
 from services.embeddings import is_configured as embeddings_configured
@@ -18,16 +19,16 @@ async def lifespan(app: FastAPI):
     if db_configured():
         db_init = await init_db()
         if db_init:
-            print("✓ Database connected and initialized")
+            print("[OK] Database connected and initialized")
         else:
-            print("✗ Database initialization failed")
+            print("[ERROR] Database initialization failed")
     else:
-        print("⚠ Database not configured (booking features disabled)")
-    
+        print("[WARNING] Database not configured (booking features disabled)")
+
     if embeddings_configured():
-        print("✓ Cohere embeddings configured")
+        print("[OK] Cohere embeddings configured")
     else:
-        print("⚠ Cohere not configured (RAG features disabled)")
+        print("[WARNING] Cohere not configured (RAG features disabled)")
     
     yield
     
@@ -61,6 +62,7 @@ app.add_middleware(
 
 # Include routers
 app.include_router(chat_router)
+app.include_router(bookings_router)
 
 
 @app.get("/", response_model=HealthResponse)
