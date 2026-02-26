@@ -143,31 +143,33 @@ export default function Gallery() {
       }
 
       // Gallery images entrance animation
-      const allImages = containerRef.current.querySelectorAll('.gallery-image');
-      gsap.fromTo(
-        allImages,
-        {
-          scale: 0.8,
-          opacity: 0,
-          rotateY: -30
-        },
-        {
-          scale: 1,
-          opacity: 1,
-          rotateY: 0,
-          duration: 1,
-          stagger: {
-            amount: 1.2,
-            from: 'center',
-            ease: 'power2.out'
+      if (containerRef.current) {
+        const allImages = containerRef.current.querySelectorAll('.gallery-image');
+        gsap.fromTo(
+          allImages,
+          {
+            scale: 0.8,
+            opacity: 0,
+            rotateY: -30
           },
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: containerRef.current,
-            start: 'top 70%',
-          },
-        }
-      );
+          {
+            scale: 1,
+            opacity: 1,
+            rotateY: 0,
+            duration: 1,
+            stagger: {
+              amount: 1.2,
+              from: 'center',
+              ease: 'power2.out'
+            },
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: containerRef.current,
+              start: 'top 70%',
+            },
+          }
+        );
+      }
     }, sectionRef);
 
     return () => ctx.revert();
