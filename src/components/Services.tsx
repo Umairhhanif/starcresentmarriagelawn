@@ -1,8 +1,12 @@
 'use client';
 
+import { useEffect, useRef } from 'react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { motion } from 'motion/react';
 import { Heart, Users, Building2, PartyPopper, Sparkles, Camera } from 'lucide-react';
-import FadeInView from './animations/FadeInView';
+
+gsap.registerPlugin(ScrollTrigger);
 
 const services = [
   {
@@ -44,104 +48,328 @@ const services = [
 ];
 
 export default function Services() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const ctaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      // Header animations
+      if (headerRef.current) {
+        const line = headerRef.current.querySelector('.header-line');
+        const label = headerRef.current.querySelector('.header-label');
+        const title = headerRef.current.querySelector('.header-title');
+        const desc = headerRef.current.querySelector('.header-desc');
+
+        const tl = gsap.timeline({
+          scrollTrigger: {
+            trigger: headerRef.current,
+            start: 'top 80%',
+          },
+        });
+
+        tl.fromTo(
+          line,
+          { scaleX: 0, transformOrigin: 'left' },
+          { scaleX: 1, duration: 0.8, ease: 'power2.out' }
+        )
+        .fromTo(
+          label,
+          { x: -30, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.6 },
+          '-=0.4'
+        )
+        .fromTo(
+          title,
+          { y: 80, opacity: 0 },
+          { y: 0, opacity: 1, duration: 1, ease: 'power3.out' },
+          '-=0.3'
+        )
+        .fromTo(
+          desc,
+          { y: 30, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.8 },
+          '-=0.5'
+        );
+      }
+
+      // Service cards staggered animation
+      if (gridRef.current) {
+        const cards = gridRef.current.querySelectorAll('.service-card');
+
+        gsap.fromTo(
+          cards,
+          {
+            y: 100,
+            opacity: 0,
+            scale: 0.9,
+            rotateX: -15
+          },
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            rotateX: 0,
+            duration: 1,
+            stagger: {
+              amount: 0.8,
+              from: 'start',
+              ease: 'power2.out'
+            },
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: gridRef.current,
+              start: 'top 75%',
+            },
+          }
+        );
+
+        // Animate card numbers on scroll
+        cards.forEach((card) => {
+          const number = card.querySelector('.card-number');
+          if (number) {
+            gsap.fromTo(
+              number,
+              { scale: 0, rotation: -180, opacity: 0 },
+              {
+                scale: 1,
+                rotation: 0,
+                opacity: 0.05,
+                duration: 1.2,
+                ease: 'back.out(1.7)',
+                scrollTrigger: {
+                  trigger: card,
+                  start: 'top 85%',
+                },
+              }
+            );
+          }
+
+          // Icon animation
+          const icon = card.querySelector('.card-icon');
+          if (icon) {
+            gsap.fromTo(
+              icon,
+              { scale: 0, rotation: -90 },
+              {
+                scale: 1,
+                rotation: 0,
+                duration: 0.8,
+                ease: 'back.out(2)',
+                scrollTrigger: {
+                  trigger: card,
+                  start: 'top 80%',
+                },
+              }
+            );
+          }
+
+          // Features tags animation
+          const features = card.querySelectorAll('.feature-tag');
+          gsap.fromTo(
+            features,
+            { x: -20, opacity: 0 },
+            {
+              x: 0,
+              opacity: 1,
+              duration: 0.5,
+              stagger: 0.1,
+              ease: 'power2.out',
+              scrollTrigger: {
+                trigger: card,
+                start: 'top 75%',
+              },
+            }
+          );
+        });
+      }
+
+      // CTA animation
+      if (ctaRef.current) {
+        gsap.fromTo(
+          ctaRef.current,
+          { y: 50, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: ctaRef.current,
+              start: 'top 90%',
+            },
+          }
+        );
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section id="services" className="py-24 md:py-32" style={{ backgroundColor: 'var(--background)' }}>
-      <div className="max-w-7xl mx-auto px-6">
+    <section
+      ref={sectionRef}
+      id="services"
+      className="py-32 md:py-40 relative overflow-hidden"
+      style={{ backgroundColor: 'var(--background)' }}
+    >
+      {/* Decorative background elements */}
+      <div
+        className="absolute top-1/4 left-0 w-96 h-96 rounded-full blur-[150px] opacity-10"
+        style={{ background: 'var(--primary)' }}
+      />
+      <div
+        className="absolute bottom-1/4 right-0 w-96 h-96 rounded-full blur-[150px] opacity-10"
+        style={{ background: 'var(--accent)' }}
+      />
+
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Header */}
-        <div className="text-center mb-16">
-          <FadeInView>
-            <span 
-              className="text-sm tracking-[0.3em] uppercase mb-4 block"
+        <div ref={headerRef} className="max-w-3xl mb-20">
+          <div className="flex items-center gap-4 mb-6">
+            <div
+              className="header-line w-16 h-px"
+              style={{ backgroundColor: 'var(--primary)' }}
+            />
+            <span
+              className="header-label text-xs tracking-[0.4em] uppercase font-medium"
               style={{ color: 'var(--primary)' }}
             >
               Our Services
             </span>
-          </FadeInView>
+          </div>
 
-          <FadeInView delay={0.1}>
-            <h2 
-              className="text-4xl md:text-5xl lg:text-6xl font-light mb-6"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
-            >
-              Everything You Need for a
-              <br />
-              <span style={{ color: 'var(--primary)' }}>Perfect Celebration</span>
-            </h2>
-          </FadeInView>
+          <h2
+            className="header-title text-5xl md:text-6xl lg:text-7xl font-light mb-8 leading-[1.1]"
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
+          >
+            Everything You Need
+            <br />
+            <span className="italic" style={{ color: 'var(--primary)' }}>
+              for a Perfect
+            </span>
+            <br />
+            Celebration
+          </h2>
 
-          <FadeInView delay={0.2}>
-            <p 
-              className="text-lg max-w-2xl mx-auto"
-              style={{ color: 'var(--text-muted)' }}
-            >
-              From intimate gatherings to grand celebrations, we offer comprehensive 
-              event services tailored to your unique vision.
-            </p>
-          </FadeInView>
+          <p
+            className="header-desc text-lg leading-relaxed"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            From intimate gatherings to grand celebrations, we offer comprehensive
+            event services tailored to your unique vision.
+          </p>
         </div>
 
         {/* Services Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div ref={gridRef} className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {services.map((service, index) => (
-            <FadeInView key={service.title} delay={index * 0.1}>
-              <motion.div
-                whileHover={{ y: -10, scale: 1.02 }}
-                transition={{ duration: 0.3 }}
-                className="group p-8 rounded-2xl cursor-pointer h-full"
-                style={{ 
-                  background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.02) 100%)',
-                  backdropFilter: 'blur(20px)',
-                  WebkitBackdropFilter: 'blur(20px)',
-                  border: '1px solid rgba(255, 255, 255, 0.12)',
-                  boxShadow: '0 8px 32px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(212, 175, 55, 0.1), inset 0 1px 1px rgba(255, 255, 255, 0.1)',
+            <motion.div
+              key={service.title}
+              whileHover={{ y: -8 }}
+              transition={{ duration: 0.4, ease: 'easeOut' }}
+              className="service-card group relative p-10 h-full cursor-pointer overflow-hidden"
+              style={{
+                backgroundColor: 'var(--surface)',
+                border: '1px solid var(--border)',
+                boxShadow: '0 10px 40px rgba(0, 0, 0, 0.3)'
+              }}
+            >
+              {/* Hover gradient overlay */}
+              <div
+                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                style={{
+                  background: 'linear-gradient(135deg, rgba(201, 169, 97, 0.08) 0%, transparent 60%)'
                 }}
+              />
+
+              {/* Number indicator */}
+              <div
+                className="card-number absolute top-6 right-6 text-6xl font-light opacity-5 group-hover:opacity-10 transition-opacity duration-500"
+                style={{ fontFamily: 'var(--font-display)', color: 'var(--primary)' }}
               >
-                {/* Icon */}
-                <div 
-                  className="w-14 h-14 rounded-xl flex items-center justify-center mb-6 transition-all duration-300 group-hover:gold-glow"
-                  style={{ backgroundColor: 'var(--surface-light)' }}
-                >
-                  <service.icon 
-                    size={28} 
+                {String(index + 1).padStart(2, '0')}
+              </div>
+
+              {/* Icon */}
+              <div className="relative z-10 mb-8">
+                <div className="card-icon w-16 h-16 flex items-center justify-center transition-all duration-500 group-hover:scale-110">
+                  <service.icon
+                    size={32}
                     style={{ color: 'var(--primary)' }}
-                    className="transition-transform duration-300 group-hover:scale-110"
+                    strokeWidth={1.5}
                   />
                 </div>
+              </div>
 
-                {/* Title */}
-                <h3 
-                  className="text-xl font-medium mb-3"
-                  style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
-                >
-                  {service.title}
-                </h3>
+              {/* Title */}
+              <h3
+                className="text-2xl font-light mb-4 relative z-10"
+                style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
+              >
+                {service.title}
+              </h3>
 
-                {/* Description */}
-                <p 
-                  className="mb-6"
-                  style={{ color: 'var(--text-muted)' }}
-                >
-                  {service.description}
-                </p>
+              {/* Description */}
+              <p
+                className="mb-8 leading-relaxed relative z-10"
+                style={{ color: 'var(--text-muted)' }}
+              >
+                {service.description}
+              </p>
 
-                {/* Features */}
-                <div className="flex flex-wrap gap-2">
-                  {service.features.map((feature) => (
-                    <span
-                      key={feature}
-                      className="text-xs px-3 py-1 rounded-full"
-                      style={{ 
-                        backgroundColor: 'var(--surface-light)',
-                        color: 'var(--primary)',
-                      }}
-                    >
-                      {feature}
-                    </span>
-                  ))}
-                </div>
-              </motion.div>
-            </FadeInView>
+              {/* Features */}
+              <div className="flex flex-wrap gap-3 relative z-10">
+                {service.features.map((feature) => (
+                  <span
+                    key={feature}
+                    className="feature-tag text-xs px-4 py-2 tracking-wider uppercase font-medium transition-all duration-300 group-hover:border-primary"
+                    style={{
+                      backgroundColor: 'var(--surface-light)',
+                      color: 'var(--text-muted)',
+                      border: '1px solid var(--border)'
+                    }}
+                  >
+                    {feature}
+                  </span>
+                ))}
+              </div>
+
+              {/* Decorative corner */}
+              <div
+                className="absolute bottom-0 right-0 w-20 h-20 border-r-2 border-b-2 opacity-0 group-hover:opacity-30 transition-opacity duration-500"
+                style={{ borderColor: 'var(--primary)' }}
+              />
+            </motion.div>
           ))}
+        </div>
+
+        {/* Bottom CTA */}
+        <div ref={ctaRef} className="mt-20 text-center">
+          <motion.a
+            href="#contact"
+            whileHover={{ scale: 1.03, x: 5 }}
+            whileTap={{ scale: 0.98 }}
+            className="inline-flex items-center gap-3 px-12 py-5 font-medium cursor-pointer group"
+            style={{
+              backgroundColor: 'transparent',
+              border: '1px solid var(--primary)',
+              color: 'var(--text-primary)',
+              letterSpacing: '0.05em'
+            }}
+          >
+            <span className="uppercase text-sm">Discuss Your Event</span>
+            <motion.span
+              animate={{ x: [0, 5, 0] }}
+              transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
+              style={{ color: 'var(--primary)' }}
+            >
+              →
+            </motion.span>
+          </motion.a>
         </div>
       </div>
     </section>

@@ -1,22 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  /* Dark elegant theme */
-  --background: #0A0A0F;
-  --surface: #12121A;
-  --surface-light: #1A1A24;
-  --primary: #D4AF37;
-  --primary-light: #E5C158;
-  --secondary: #F5E6D3;
-  --text-primary: #FFFFFF;
-  --text-muted: #94A3B8;
-  --text-light: #CBD5E1;
-  --border: rgba(212, 175, 55, 0.2);
-  --glow: rgba(212, 175, 55, 0.5);
+  /* Luxe editorial theme */
+  --background: #0D0D0D;
+  --surface: #1A1614;
+  --surface-light: #2A2420;
+  --primary: #C9A961;
+  --primary-light: #E0C589;
+  --accent: #8B7355;
+  --secondary: #F4EDE4;
+  --text-primary: #FAF8F5;
+  --text-muted: #B8AFA5;
+  --text-light: #D4CEC6;
+  --border: rgba(201, 169, 97, 0.15);
+  --glow: rgba(201, 169, 97, 0.4);
 
-  --font-display: 'Cormorant Garamond', serif;
-  --font-script: 'Great Vibes', cursive;
-  --font-body: 'Inter', sans-serif;
+  --font-display: 'Playfair Display', serif;
+  --font-script: 'Bodoni Moda', serif;
+  --font-body: 'DM Sans', sans-serif;
 }
 
 @theme inline {
@@ -95,6 +96,21 @@ body {
   color: var(--text-primary);
   font-family: var(--font-body);
   overflow-x: hidden;
+  position: relative;
+}
+
+/* Noise texture overlay */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0.03;
+  z-index: 9999;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }
 
 /* Selection */
@@ -105,19 +121,20 @@ body {
 
 /* Gold glow effect */
 .gold-glow {
-  box-shadow: 0 0 40px var(--glow);
+  box-shadow: 0 0 60px var(--glow), 0 0 120px rgba(201, 169, 97, 0.2);
 }
 
 .text-gold-glow {
-  text-shadow: 0 0 30px var(--glow);
+  text-shadow: 0 0 40px var(--glow), 0 0 80px rgba(201, 169, 97, 0.3);
 }
 
-/* Glass effect */
+/* Glass effect with texture */
 .glass {
-  background: rgba(18, 18, 26, 0.8);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(26, 22, 20, 0.85);
+  backdrop-filter: blur(30px) saturate(180%);
+  -webkit-backdrop-filter: blur(30px) saturate(180%);
   border: 1px solid var(--border);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 20px 60px rgba(0, 0, 0, 0.5);
 }
 
 /* Gradient border */
@@ -319,4 +336,45 @@ body {
     --liner-angle: 360deg;
     transform: rotate(360deg);
   }
+}
+
+/* Custom cursor */
+@media (pointer: fine) {
+  body {
+    cursor: none;
+  }
+
+  a, button, [role="button"], input, textarea {
+    cursor: none;
+  }
+}
+
+/* Reveal animation */
+@keyframes reveal {
+  from {
+    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
+  }
+  to {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
+}
+
+.reveal-animation {
+  animation: reveal 1.2s ease-out forwards;
+}
+
+/* Magnetic effect helper */
+.magnetic {
+  transition: transform 0.3s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* Grain overlay for images */
+.grain-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  opacity: 0.15;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
 }

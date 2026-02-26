@@ -4,7 +4,6 @@ import { useEffect, useRef } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Image from 'next/image';
-import FadeInView from './animations/FadeInView';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,131 +16,320 @@ const stats = [
 
 export default function About() {
   const imageRef = useRef<HTMLDivElement>(null);
+  const sectionRef = useRef<HTMLElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
+  const statsRef = useRef<HTMLDivElement>(null);
+  const lineRef = useRef<HTMLDivElement>(null);
+  const titleRef = useRef<HTMLHeadingElement>(null);
 
   useEffect(() => {
-    if (!imageRef.current) return;
+    if (!imageRef.current || !sectionRef.current) return;
 
-    gsap.fromTo(
-      imageRef.current,
-      { clipPath: 'inset(0 100% 0 0)' },
-      {
-        clipPath: 'inset(0 0% 0 0)',
-        duration: 1.2,
-        ease: 'power3.inOut',
-        scrollTrigger: {
-          trigger: imageRef.current,
-          start: 'top 80%',
-          toggleActions: 'play none none reverse',
+    const ctx = gsap.context(() => {
+      // Image reveal with scale
+      gsap.fromTo(
+        imageRef.current,
+        {
+          clipPath: 'polygon(0 0, 0 0, 0 100%, 0 100%)',
+          scale: 1.2
         },
-      }
-    );
+        {
+          clipPath: 'polygon(0 0, 100% 0, 100% 100%, 0 100%)',
+          scale: 1,
+          duration: 1.8,
+          ease: 'power3.inOut',
+          scrollTrigger: {
+            trigger: imageRef.current,
+            start: 'top 75%',
+            toggleActions: 'play none none reverse',
+          },
+        }
+      );
 
-    return () => {
-      ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-    };
+      // Decorative line animation
+      if (lineRef.current) {
+        gsap.fromTo(
+          lineRef.current,
+          { scaleX: 0, transformOrigin: 'left' },
+          {
+            scaleX: 1,
+            duration: 1.2,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: lineRef.current,
+              start: 'top 85%',
+            },
+          }
+        );
+      }
+
+      // Title split animation
+      if (titleRef.current) {
+        const words = titleRef.current.querySelectorAll('.word');
+        gsap.fromTo(
+          words,
+          { y: 100, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            stagger: 0.15,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: titleRef.current,
+              start: 'top 80%',
+            },
+          }
+        );
+      }
+
+      // Content paragraphs fade in
+      if (contentRef.current) {
+        const paragraphs = contentRef.current.querySelectorAll('p');
+        gsap.fromTo(
+          paragraphs,
+          { y: 50, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 0.8,
+            stagger: 0.2,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: contentRef.current,
+              start: 'top 75%',
+            },
+          }
+        );
+      }
+
+      // Stats counter animation
+      if (statsRef.current) {
+        const statCards = statsRef.current.querySelectorAll('.stat-card');
+
+        gsap.fromTo(
+          statCards,
+          {
+            y: 60,
+            opacity: 0,
+            scale: 0.8
+          },
+          {
+            y: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.8,
+            stagger: 0.1,
+            ease: 'back.out(1.4)',
+            scrollTrigger: {
+              trigger: statsRef.current,
+              start: 'top 80%',
+            },
+          }
+        );
+
+        // Animate stat numbers
+        statCards.forEach((card) => {
+          const valueEl = card.querySelector('.stat-value');
+          if (valueEl) {
+            const text = valueEl.textContent || '';
+            const numMatch = text.match(/\d+/);
+            if (numMatch) {
+              const targetNum = parseInt(numMatch[0]);
+              const suffix = text.replace(/\d+/, '');
+
+              gsap.fromTo(
+                valueEl,
+                { innerText: 0 },
+                {
+                  innerText: targetNum,
+                  duration: 2,
+                  ease: 'power2.out',
+                  snap: { innerText: 1 },
+                  scrollTrigger: {
+                    trigger: card,
+                    start: 'top 80%',
+                  },
+                  onUpdate: function() {
+                    if (valueEl) {
+                      valueEl.textContent = Math.ceil(parseFloat(valueEl.textContent || '0')) + suffix;
+                    }
+                  }
+                }
+              );
+            }
+          }
+        });
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
   }, []);
 
   return (
-    <section 
-      id="about" 
-      className="py-24 md:py-32"
+    <section
+      ref={sectionRef}
+      id="about"
+      className="py-32 md:py-40 relative overflow-hidden"
       style={{ backgroundColor: 'var(--surface)' }}
     >
-      <div className="max-w-7xl mx-auto px-6">
-        <div className="grid lg:grid-cols-2 gap-16 items-center">
-          {/* Image */}
-          <div 
-            ref={imageRef}
-            className="relative h-[500px] lg:h-[600px] rounded-2xl overflow-hidden gradient-border"
-          >
-            <Image
-              src="https://lh3.googleusercontent.com/gps-cs-s/AG0ilSzeTFgvGVcn2V4LAEoFnEJ_mCt5NK4GwUb78PVQDZdEFWJFMhS67Z_F1-8CVsj2p9iQm4-6OrtjYK6mt7ND6-qLAvW1ADWYE0hfV4qINfvqzc7nYyqd5mj7oUSXYph0GRONgSoRtpqxaFsJ=w800-h1200-k-no"
-              alt="Star Crescent Lawn Interior"
-              fill
-              className="object-cover"
-            />
-            {/* Decorative overlay */}
-            <div 
-              className="absolute inset-0"
-              style={{ 
-                background: 'linear-gradient(135deg, rgba(212, 175, 55, 0.1), transparent)' 
-              }}
-            />
-          </div>
+      {/* Decorative background element */}
+      <div
+        className="absolute top-0 right-0 w-1/3 h-full opacity-5"
+        style={{
+          background: 'linear-gradient(135deg, var(--primary) 0%, transparent 70%)'
+        }}
+      />
 
-          {/* Content */}
-          <div>
-            <FadeInView>
-              <span 
-                className="text-sm tracking-[0.3em] uppercase mb-4 block"
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid lg:grid-cols-12 gap-16 lg:gap-20 items-center">
+          {/* Content - Left side */}
+          <div className="lg:col-span-5 order-2 lg:order-1">
+            <div className="flex items-center gap-4 mb-6">
+              <div
+                ref={lineRef}
+                className="w-16 h-px"
+                style={{ backgroundColor: 'var(--primary)' }}
+              />
+              <span
+                className="text-xs tracking-[0.4em] uppercase font-medium"
                 style={{ color: 'var(--primary)' }}
               >
                 About Us
               </span>
-            </FadeInView>
+            </div>
 
-            <FadeInView delay={0.1}>
-              <h2 
-                className="text-4xl md:text-5xl lg:text-6xl font-light mb-8 leading-tight"
-                style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
-              >
-                Crafting Memories
-                <br />
-                <span style={{ color: 'var(--primary)' }}>Since 2009</span>
-              </h2>
-            </FadeInView>
+            <h2
+              ref={titleRef}
+              className="text-5xl md:text-6xl lg:text-7xl font-light mb-8 leading-[1.1]"
+              style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
+            >
+              <span className="word inline-block">Crafting</span>
+              <br />
+              <span className="word inline-block italic" style={{ color: 'var(--primary)' }}>
+                Memories
+              </span>
+              <br />
+              <span className="word inline-block">Since</span>{' '}
+              <span className="word inline-block">2009</span>
+            </h2>
 
-            <FadeInView delay={0.2}>
-              <p 
-                className="text-lg mb-6 leading-relaxed"
+            <div ref={contentRef} className="space-y-6 mb-12">
+              <p
+                className="text-lg leading-relaxed"
                 style={{ color: 'var(--text-muted)' }}
               >
-                Star Crescent Marriage Lawn has been the premier destination for 
-                unforgettable celebrations in Karachi. Located in the heart of 
-                Model Colony, our venue combines elegant aesthetics with 
+                Star Crescent Marriage Lawn has been the premier destination for
+                unforgettable celebrations in Karachi. Located in the heart of
+                Model Colony, our venue combines elegant aesthetics with
                 world-class hospitality.
               </p>
-            </FadeInView>
-
-            <FadeInView delay={0.3}>
-              <p 
-                className="text-lg mb-10 leading-relaxed"
+              <p
+                className="text-lg leading-relaxed"
                 style={{ color: 'var(--text-muted)' }}
               >
-                From intimate gatherings to grand weddings, we transform your vision 
-                into reality with our stunning décor, professional catering, and 
+                From intimate gatherings to grand weddings, we transform your vision
+                into reality with our stunning décor, professional catering, and
                 dedicated team of event specialists.
               </p>
-            </FadeInView>
+            </div>
 
-            {/* Stats */}
-            <FadeInView delay={0.4}>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {stats.map((stat, index) => (
-                  <div 
-                    key={index}
-                    className="text-center p-4 rounded-xl"
-                    style={{ backgroundColor: 'var(--surface-light)' }}
+            {/* Stats - Mobile/Tablet */}
+            <div ref={statsRef} className="grid grid-cols-2 gap-6 lg:hidden">
+              {stats.map((stat, index) => (
+                <div
+                  key={index}
+                  className="stat-card relative p-6 overflow-hidden group"
+                  style={{
+                    backgroundColor: 'var(--surface-light)',
+                    border: '1px solid var(--border)'
+                  }}
+                >
+                  <div
+                    className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                    style={{
+                      background: 'linear-gradient(135deg, rgba(201, 169, 97, 0.1), transparent)'
+                    }}
+                  />
+                  <div
+                    className="stat-value text-4xl font-light mb-2 relative z-10"
+                    style={{
+                      fontFamily: 'var(--font-display)',
+                      color: 'var(--primary)',
+                      fontStyle: 'italic'
+                    }}
                   >
-                    <div 
-                      className="text-3xl md:text-4xl font-light mb-1"
-                      style={{ 
-                        fontFamily: 'var(--font-display)', 
-                        color: 'var(--primary)' 
-                      }}
-                    >
-                      {stat.value}
-                    </div>
-                    <div 
-                      className="text-xs tracking-wider uppercase"
-                      style={{ color: 'var(--text-muted)' }}
-                    >
-                      {stat.label}
-                    </div>
+                    {stat.value}
                   </div>
-                ))}
+                  <div
+                    className="text-xs tracking-wider uppercase relative z-10"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Image - Right side */}
+          <div className="lg:col-span-7 order-1 lg:order-2">
+            <div className="relative">
+              {/* Main image */}
+              <div
+                ref={imageRef}
+                className="relative h-[500px] lg:h-[700px] overflow-hidden"
+                style={{
+                  boxShadow: '0 30px 80px rgba(0, 0, 0, 0.6)'
+                }}
+              >
+                <Image
+                  src="https://lh3.googleusercontent.com/gps-cs-s/AG0ilSzeTFgvGVcn2V4LAEoFnEJ_mCt5NK4GwUb78PVQDZdEFWJFMhS67Z_F1-8CVsj2p9iQm4-6OrtjYK6mt7ND6-qLAvW1ADWYE0hfV4qINfvqzc7nYyqd5mj7oUSXYph0GRONgSoRtpqxaFsJ=w800-h1200-k-no"
+                  alt="Star Crescent Lawn Interior"
+                  fill
+                  className="object-cover"
+                />
+                {/* Subtle overlay */}
+                <div
+                  className="absolute inset-0"
+                  style={{
+                    background: 'linear-gradient(to bottom, transparent 60%, rgba(13, 13, 13, 0.4))'
+                  }}
+                />
               </div>
-            </FadeInView>
+
+              {/* Decorative border element */}
+              <div
+                className="absolute -bottom-8 -right-8 w-32 h-32 border-r-2 border-b-2 hidden lg:block"
+                style={{ borderColor: 'var(--primary)', opacity: 0.4 }}
+              />
+
+              {/* Stats overlay - Desktop only */}
+              <div className="hidden lg:block absolute -bottom-12 -left-12 glass p-8 max-w-sm">
+                <div className="grid grid-cols-2 gap-6">
+                  {stats.map((stat, index) => (
+                    <div key={index} className="stat-card text-center">
+                      <div
+                        className="stat-value text-3xl font-light mb-1"
+                        style={{
+                          fontFamily: 'var(--font-display)',
+                          color: 'var(--primary)',
+                          fontStyle: 'italic'
+                        }}
+                      >
+                        {stat.value}
+                      </div>
+                      <div
+                        className="text-[10px] tracking-wider uppercase"
+                        style={{ color: 'var(--text-muted)' }}
+                      >
+                        {stat.label}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

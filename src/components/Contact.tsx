@@ -1,9 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'motion/react';
+import { gsap } from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { Phone, Mail, MapPin, Clock, Send, MessageCircle } from 'lucide-react';
-import FadeInView from './animations/FadeInView';
+
+gsap.registerPlugin(ScrollTrigger);
 
 export default function Contact() {
   const [formData, setFormData] = useState({
@@ -19,13 +22,17 @@ export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
+  const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const formRef = useRef<HTMLDivElement>(null);
+  const contactCardsRef = useRef<HTMLDivElement>(null);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate form submission
+
     await new Promise(resolve => setTimeout(resolve, 1500));
-    
+
     setIsSubmitting(false);
     setIsSubmitted(true);
     setFormData({
@@ -48,263 +55,373 @@ export default function Contact() {
     });
   };
 
+  useEffect(() => {
+    if (!sectionRef.current) return;
+
+    const ctx = gsap.context(() => {
+      // Header animation
+      if (headerRef.current) {
+        const elements = headerRef.current.querySelectorAll('.header-element');
+        gsap.fromTo(
+          elements,
+          { y: 60, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            stagger: 0.15,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: headerRef.current,
+              start: 'top 80%',
+            },
+          }
+        );
+      }
+
+      // Form animation
+      if (formRef.current) {
+        gsap.fromTo(
+          formRef.current,
+          {
+            x: -80,
+            opacity: 0,
+            rotateY: -15
+          },
+          {
+            x: 0,
+            opacity: 1,
+            rotateY: 0,
+            duration: 1.2,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: formRef.current,
+              start: 'top 75%',
+            },
+          }
+        );
+
+        // Form fields stagger
+        const fields = formRef.current.querySelectorAll('.form-field');
+        gsap.fromTo(
+          fields,
+          { x: -30, opacity: 0 },
+          {
+            x: 0,
+            opacity: 1,
+            duration: 0.6,
+            stagger: 0.08,
+            ease: 'power2.out',
+            scrollTrigger: {
+              trigger: formRef.current,
+              start: 'top 70%',
+            },
+          }
+        );
+      }
+
+      // Contact cards animation
+      if (contactCardsRef.current) {
+        const cards = contactCardsRef.current.querySelectorAll('.contact-card');
+        gsap.fromTo(
+          cards,
+          {
+            x: 80,
+            opacity: 0,
+            scale: 0.9
+          },
+          {
+            x: 0,
+            opacity: 1,
+            scale: 1,
+            duration: 0.8,
+            stagger: 0.12,
+            ease: 'back.out(1.4)',
+            scrollTrigger: {
+              trigger: contactCardsRef.current,
+              start: 'top 75%',
+            },
+          }
+        );
+
+        // Icon animations
+        cards.forEach((card) => {
+          const icon = card.querySelector('.contact-icon');
+          if (icon) {
+            gsap.fromTo(
+              icon,
+              { scale: 0, rotation: -90 },
+              {
+                scale: 1,
+                rotation: 0,
+                duration: 0.6,
+                ease: 'back.out(2)',
+                scrollTrigger: {
+                  trigger: card,
+                  start: 'top 80%',
+                },
+              }
+            );
+          }
+        });
+      }
+    }, sectionRef);
+
+    return () => ctx.revert();
+  }, []);
+
   return (
-    <section 
-      id="contact" 
+    <section
+      ref={sectionRef}
+      id="contact"
       className="py-24 md:py-32 relative overflow-hidden"
       style={{ backgroundColor: 'var(--background)' }}
     >
       {/* Background decorative elements */}
-      <div 
+      <div
         className="absolute top-1/4 left-0 w-96 h-96 rounded-full blur-3xl opacity-10"
         style={{ background: 'var(--primary)' }}
       />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Header */}
-        <div className="text-center mb-16">
-          <FadeInView>
-            <span 
-              className="text-sm tracking-[0.3em] uppercase mb-4 block"
-              style={{ color: 'var(--primary)' }}
-            >
-              Get In Touch
-            </span>
-          </FadeInView>
+        <div ref={headerRef} className="text-center mb-16">
+          <span
+            className="header-element text-sm tracking-[0.3em] uppercase mb-4 block"
+            style={{ color: 'var(--primary)' }}
+          >
+            Get In Touch
+          </span>
 
-          <FadeInView delay={0.1}>
-            <h2 
-              className="text-4xl md:text-5xl lg:text-6xl font-light mb-6"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
-            >
-              Start Planning Your
-              <br />
-              <span style={{ color: 'var(--primary)' }}>Dream Event</span>
-            </h2>
-          </FadeInView>
+          <h2
+            className="header-element text-4xl md:text-5xl lg:text-6xl font-light mb-6"
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
+          >
+            Start Planning Your
+            <br />
+            <span style={{ color: 'var(--primary)' }}>Dream Event</span>
+          </h2>
 
-          <FadeInView delay={0.2}>
-            <p 
-              className="text-lg max-w-2xl mx-auto"
-              style={{ color: 'var(--text-muted)' }}
-            >
-              Let us help you create an unforgettable celebration. 
-              Fill out the form or contact us directly.
-            </p>
-          </FadeInView>
+          <p
+            className="header-element text-lg max-w-2xl mx-auto"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            Let us help you create an unforgettable celebration.
+            Fill out the form or contact us directly.
+          </p>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-12">
           {/* Contact Form */}
-          <FadeInView delay={0.3}>
-            <div 
-              className="p-8 md:p-10 rounded-2xl gradient-border"
-              style={{ backgroundColor: 'var(--surface)' }}
-            >
-              <form onSubmit={handleSubmit} className="space-y-6">
-                <div className="grid md:grid-cols-2 gap-6">
-                  <div>
-                    <label 
-                      htmlFor="name"
-                      className="block text-sm mb-2"
-                      style={{ color: 'var(--text-muted)' }}
-                    >
-                      Full Name *
-                    </label>
-                    <input
-                      type="text"
-                      name="name"
-                      id="name"
-                      required
-                      value={formData.name}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-lg border outline-none transition-all duration-300 focus:border-[var(--primary)]"
-                      style={{ 
-                        backgroundColor: 'var(--surface-light)',
-                        borderColor: 'var(--border)',
-                        color: 'var(--text-primary)',
-                      }}
-                      placeholder="Your name"
-                    />
-                  </div>
-                  <div>
-                    <label 
-                      htmlFor="phone"
-                      className="block text-sm mb-2"
-                      style={{ color: 'var(--text-muted)' }}
-                    >
-                      Phone Number *
-                    </label>
-                    <input
-                      type="tel"
-                      name="phone"
-                      id="phone"
-                      required
-                      value={formData.phone}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-lg border outline-none transition-all duration-300 focus:border-[var(--primary)]"
-                      style={{ 
-                        backgroundColor: 'var(--surface-light)',
-                        borderColor: 'var(--border)',
-                        color: 'var(--text-primary)',
-                      }}
-                      placeholder="+92 XXX XXXXXXX"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label 
-                    htmlFor="email"
+          <div
+            ref={formRef}
+            className="p-8 md:p-10 rounded-2xl gradient-border"
+            style={{ backgroundColor: 'var(--surface)' }}
+          >
+            <form onSubmit={handleSubmit} className="space-y-6">
+              <div className="grid md:grid-cols-2 gap-6">
+                <div className="form-field">
+                  <label
+                    htmlFor="name"
                     className="block text-sm mb-2"
                     style={{ color: 'var(--text-muted)' }}
                   >
-                    Email Address
+                    Full Name *
                   </label>
                   <input
-                    type="email"
-                    name="email"
-                    id="email"
-                    value={formData.email}
+                    type="text"
+                    name="name"
+                    id="name"
+                    required
+                    value={formData.name}
                     onChange={handleChange}
                     className="w-full px-4 py-3 rounded-lg border outline-none transition-all duration-300 focus:border-[var(--primary)]"
-                    style={{ 
+                    style={{
                       backgroundColor: 'var(--surface-light)',
                       borderColor: 'var(--border)',
                       color: 'var(--text-primary)',
                     }}
-                    placeholder="your@email.com"
+                    placeholder="Your name"
                   />
                 </div>
-
-                <div className="grid md:grid-cols-3 gap-6">
-                  <div>
-                    <label 
-                      htmlFor="eventDate"
-                      className="block text-sm mb-2"
-                      style={{ color: 'var(--text-muted)' }}
-                    >
-                      Event Date
-                    </label>
-                    <input
-                      type="date"
-                      name="eventDate"
-                      id="eventDate"
-                      value={formData.eventDate}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-lg border outline-none transition-all duration-300 focus:border-[var(--primary)]"
-                      style={{ 
-                        backgroundColor: 'var(--surface-light)',
-                        borderColor: 'var(--border)',
-                        color: 'var(--text-primary)',
-                      }}
-                    />
-                  </div>
-                  <div>
-                    <label 
-                      htmlFor="eventType"
-                      className="block text-sm mb-2"
-                      style={{ color: 'var(--text-muted)' }}
-                    >
-                      Event Type
-                    </label>
-                    <select
-                      name="eventType"
-                      id="eventType"
-                      value={formData.eventType}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-lg border outline-none transition-all duration-300 focus:border-[var(--primary)] cursor-pointer"
-                      style={{ 
-                        backgroundColor: 'var(--surface-light)',
-                        borderColor: 'var(--border)',
-                        color: 'var(--text-primary)',
-                      }}
-                    >
-                      <option value="">Select type</option>
-                      <option value="wedding">Wedding</option>
-                      <option value="reception">Reception/Walima</option>
-                      <option value="mehndi">Mehndi/Sangeet</option>
-                      <option value="birthday">Birthday</option>
-                      <option value="corporate">Corporate Event</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label 
-                      htmlFor="guests"
-                      className="block text-sm mb-2"
-                      style={{ color: 'var(--text-muted)' }}
-                    >
-                      Expected Guests
-                    </label>
-                    <input
-                      type="number"
-                      name="guests"
-                      id="guests"
-                      value={formData.guests}
-                      onChange={handleChange}
-                      className="w-full px-4 py-3 rounded-lg border outline-none transition-all duration-300 focus:border-[var(--primary)]"
-                      style={{ 
-                        backgroundColor: 'var(--surface-light)',
-                        borderColor: 'var(--border)',
-                        color: 'var(--text-primary)',
-                      }}
-                      placeholder="Number"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label 
-                    htmlFor="message"
+                <div className="form-field">
+                  <label
+                    htmlFor="phone"
                     className="block text-sm mb-2"
                     style={{ color: 'var(--text-muted)' }}
                   >
-                    Additional Details
+                    Phone Number *
                   </label>
-                  <textarea
-                    name="message"
-                    id="message"
-                    rows={4}
-                    value={formData.message}
+                  <input
+                    type="tel"
+                    name="phone"
+                    id="phone"
+                    required
+                    value={formData.phone}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-lg border outline-none transition-all duration-300 focus:border-[var(--primary)] resize-none"
-                    style={{ 
+                    className="w-full px-4 py-3 rounded-lg border outline-none transition-all duration-300 focus:border-[var(--primary)]"
+                    style={{
                       backgroundColor: 'var(--surface-light)',
                       borderColor: 'var(--border)',
                       color: 'var(--text-primary)',
                     }}
-                    placeholder="Tell us about your event..."
+                    placeholder="+92 XXX XXXXXXX"
                   />
                 </div>
+              </div>
 
-                <motion.button
-                  type="submit"
-                  disabled={isSubmitting}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="relative overflow-hidden w-full py-4 rounded-xl font-medium flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
-                  style={{ 
-                    backgroundColor: 'var(--primary)', 
-                    color: 'var(--background)' 
-                  }}
+              <div className="form-field">
+                <label
+                  htmlFor="email"
+                  className="block text-sm mb-2"
+                  style={{ color: 'var(--text-muted)' }}
                 >
-                  <motion.span
-                    className="absolute inset-0 pointer-events-none"
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  name="email"
+                  id="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-lg border outline-none transition-all duration-300 focus:border-[var(--primary)]"
+                  style={{
+                    backgroundColor: 'var(--surface-light)',
+                    borderColor: 'var(--border)',
+                    color: 'var(--text-primary)',
+                  }}
+                  placeholder="your@email.com"
+                />
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="form-field">
+                  <label
+                    htmlFor="eventDate"
+                    className="block text-sm mb-2"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    Event Date
+                  </label>
+                  <input
+                    type="date"
+                    name="eventDate"
+                    id="eventDate"
+                    value={formData.eventDate}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 rounded-lg border outline-none transition-all duration-300 focus:border-[var(--primary)]"
                     style={{
-                      background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%)',
-                    }}
-                    animate={{
-                      x: ['-100%', '200%'],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                      repeatDelay: 1,
+                      backgroundColor: 'var(--surface-light)',
+                      borderColor: 'var(--border)',
+                      color: 'var(--text-primary)',
                     }}
                   />
-                  <span className="relative z-10 flex items-center gap-2">
+                </div>
+                <div className="form-field">
+                  <label
+                    htmlFor="eventType"
+                    className="block text-sm mb-2"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    Event Type
+                  </label>
+                  <select
+                    name="eventType"
+                    id="eventType"
+                    value={formData.eventType}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 rounded-lg border outline-none transition-all duration-300 focus:border-[var(--primary)] cursor-pointer"
+                    style={{
+                      backgroundColor: 'var(--surface-light)',
+                      borderColor: 'var(--border)',
+                      color: 'var(--text-primary)',
+                    }}
+                  >
+                    <option value="">Select type</option>
+                    <option value="wedding">Wedding</option>
+                    <option value="reception">Reception/Walima</option>
+                    <option value="mehndi">Mehndi/Sangeet</option>
+                    <option value="birthday">Birthday</option>
+                    <option value="corporate">Corporate Event</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+                <div className="form-field">
+                  <label
+                    htmlFor="guests"
+                    className="block text-sm mb-2"
+                    style={{ color: 'var(--text-muted)' }}
+                  >
+                    Expected Guests
+                  </label>
+                  <input
+                    type="number"
+                    name="guests"
+                    id="guests"
+                    value={formData.guests}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 rounded-lg border outline-none transition-all duration-300 focus:border-[var(--primary)]"
+                    style={{
+                      backgroundColor: 'var(--surface-light)',
+                      borderColor: 'var(--border)',
+                      color: 'var(--text-primary)',
+                    }}
+                    placeholder="Number"
+                  />
+                </div>
+              </div>
+
+              <div className="form-field">
+                <label
+                  htmlFor="message"
+                  className="block text-sm mb-2"
+                  style={{ color: 'var(--text-muted)' }}
+                >
+                  Additional Details
+                </label>
+                <textarea
+                  name="message"
+                  id="message"
+                  rows={4}
+                  value={formData.message}
+                  onChange={handleChange}
+                  className="w-full px-4 py-3 rounded-lg border outline-none transition-all duration-300 focus:border-[var(--primary)] resize-none"
+                  style={{
+                    backgroundColor: 'var(--surface-light)',
+                    borderColor: 'var(--border)',
+                    color: 'var(--text-primary)',
+                  }}
+                  placeholder="Tell us about your event..."
+                />
+              </div>
+
+              <motion.button
+                type="submit"
+                disabled={isSubmitting}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="relative overflow-hidden w-full py-4 rounded-xl font-medium flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                style={{
+                  backgroundColor: 'var(--primary)',
+                  color: 'var(--background)'
+                }}
+              >
+                <motion.span
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background: 'linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 50%, transparent 100%)',
+                  }}
+                  animate={{
+                    x: ['-100%', '200%'],
+                  }}
+                  transition={{
+                    duration: 2,
+                    repeat: Infinity,
+                    ease: 'easeInOut',
+                    repeatDelay: 1,
+                  }}
+                />
+                <span className="relative z-10 flex items-center gap-2">
                   {isSubmitting ? (
                     <span>Sending...</span>
                   ) : isSubmitted ? (
@@ -315,139 +432,136 @@ export default function Contact() {
                       <span>Send Inquiry</span>
                     </>
                   )}
-                  </span>
-                </motion.button>
-              </form>
-            </div>
-          </FadeInView>
+                </span>
+              </motion.button>
+            </form>
+          </div>
 
           {/* Contact Info */}
-          <FadeInView delay={0.4}>
-            <div className="space-y-6">
-              {/* Contact Cards */}
-              <div 
-                className="p-6 rounded-2xl flex items-start gap-4"
-                style={{ backgroundColor: 'var(--surface)' }}
+          <div ref={contactCardsRef} className="space-y-6">
+            {/* Contact Cards */}
+            <div
+              className="contact-card p-6 rounded-2xl flex items-start gap-4"
+              style={{ backgroundColor: 'var(--surface)' }}
+            >
+              <div
+                className="contact-icon w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: 'var(--surface-light)' }}
               >
-                <div 
-                  className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                  style={{ backgroundColor: 'var(--surface-light)' }}
-                >
-                  <Phone size={24} style={{ color: 'var(--primary)' }} />
-                </div>
-                <div>
-                  <h3 
-                    className="text-lg font-medium mb-1"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    Phone
-                  </h3>
-                  <a 
-                    href="tel:+923001609087"
-                    className="text-lg hover:underline cursor-pointer"
-                    style={{ color: 'var(--primary)' }}
-                  >
-                    +92 300 1609087
-                  </a>
-                  <p style={{ color: 'var(--text-muted)' }}>Call for instant booking</p>
-                </div>
+                <Phone size={24} style={{ color: 'var(--primary)' }} />
               </div>
-
-              <div 
-                className="p-6 rounded-2xl flex items-start gap-4"
-                style={{ backgroundColor: 'var(--surface)' }}
-              >
-                <div 
-                  className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                  style={{ backgroundColor: 'var(--surface-light)' }}
+              <div>
+                <h3
+                  className="text-lg font-medium mb-1"
+                  style={{ color: 'var(--text-primary)' }}
                 >
-                  <MessageCircle size={24} style={{ color: 'var(--primary)' }} />
-                </div>
-                <div>
-                  <h3 
-                    className="text-lg font-medium mb-1"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    WhatsApp
-                  </h3>
-                  <a 
-                    href="https://wa.me/923001609087"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-lg hover:underline cursor-pointer"
-                    style={{ color: 'var(--primary)' }}
-                  >
-                    Message Us
-                  </a>
-                  <p style={{ color: 'var(--text-muted)' }}>Quick response guaranteed</p>
-                </div>
-              </div>
-
-              <div 
-                className="p-6 rounded-2xl flex items-start gap-4"
-                style={{ backgroundColor: 'var(--surface)' }}
-              >
-                <div 
-                  className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                  style={{ backgroundColor: 'var(--surface-light)' }}
+                  Phone
+                </h3>
+                <a
+                  href="tel:+923001609087"
+                  className="text-lg hover:underline cursor-pointer"
+                  style={{ color: 'var(--primary)' }}
                 >
-                  <MapPin size={24} style={{ color: 'var(--primary)' }} />
-                </div>
-                <div>
-                  <h3 
-                    className="text-lg font-medium mb-1"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    Location
-                  </h3>
-                  <p style={{ color: 'var(--text-light)' }}>
-                    Jinnah Avenue, Model Colony<br />
-                    Alamgir Society B Area, Karachi
-                  </p>
-                </div>
-              </div>
-
-              <div 
-                className="p-6 rounded-2xl flex items-start gap-4"
-                style={{ backgroundColor: 'var(--surface)' }}
-              >
-                <div 
-                  className="w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
-                  style={{ backgroundColor: 'var(--surface-light)' }}
-                >
-                  <Clock size={24} style={{ color: 'var(--primary)' }} />
-                </div>
-                <div>
-                  <h3 
-                    className="text-lg font-medium mb-1"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    Working Hours
-                  </h3>
-                  <p style={{ color: 'var(--text-light)' }}>
-                    Daily: 4:00 PM - 12:00 AM<br />
-                    <span style={{ color: 'var(--text-muted)' }}>Open for site visits by appointment</span>
-                  </p>
-                </div>
-              </div>
-
-              {/* Map */}
-              <div 
-                className="rounded-2xl overflow-hidden h-64"
-                style={{ border: '1px solid var(--border)' }}
-              >
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3621.0!2d67.1797885!3d24.8966255!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3eb339dd6571f14d%3A0xc8d24e89a7d6a341!2sStar%20Crescent%20Lawn%20A!5e0!3m2!1sen!2s!4v1642688000000!5m2!1sen!2s"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg)' }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                />
+                  +92 300 1609087
+                </a>
+                <p style={{ color: 'var(--text-muted)' }}>Call for instant booking</p>
               </div>
             </div>
-          </FadeInView>
+
+            <div
+              className="contact-card p-6 rounded-2xl flex items-start gap-4"
+              style={{ backgroundColor: 'var(--surface)' }}
+            >
+              <div
+                className="contact-icon w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: 'var(--surface-light)' }}
+              >
+                <MessageCircle size={24} style={{ color: 'var(--primary)' }} />
+              </div>
+              <div>
+                <h3
+                  className="text-lg font-medium mb-1"
+                  style={{ color: 'var(--text-primary)' }}
+                >
+                  WhatsApp
+                </h3>
+                <a
+                  href="https://wa.me/923001609087"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-lg hover:underline cursor-pointer"
+                  style={{ color: 'var(--primary)' }}
+                >
+                  Message Us
+                </a>
+                <p style={{ color: 'var(--text-muted)' }}>Quick response guaranteed</p>
+              </div>
+            </div>
+
+            <div
+              className="contact-card p-6 rounded-2xl flex items-start gap-4"
+              style={{ backgroundColor: 'var(--surface)' }}
+            >
+              <div
+                className="contact-icon w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: 'var(--surface-light)' }}
+              >
+                <MapPin size={24} style={{ color: 'var(--primary)' }} />
+              </div>
+              <div>
+                <h3
+                  className="text-lg font-medium mb-1"
+                  style={{ color: 'var(--text-primary)' }}
+                >
+                  Location
+                </h3>
+                <p style={{ color: 'var(--text-light)' }}>
+                  Jinnah Avenue, Model Colony<br />
+                  Alamgir Society B Area, Karachi
+                </p>
+              </div>
+            </div>
+
+            <div
+              className="contact-card p-6 rounded-2xl flex items-start gap-4"
+              style={{ backgroundColor: 'var(--surface)' }}
+            >
+              <div
+                className="contact-icon w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0"
+                style={{ backgroundColor: 'var(--surface-light)' }}
+              >
+                <Clock size={24} style={{ color: 'var(--primary)' }} />
+              </div>
+              <div>
+                <h3
+                  className="text-lg font-medium mb-1"
+                  style={{ color: 'var(--text-primary)' }}
+                >
+                  Working Hours
+                </h3>
+                <p style={{ color: 'var(--text-light)' }}>
+                  Daily: 4:00 PM - 12:00 AM<br />
+                  <span style={{ color: 'var(--text-muted)' }}>Open for site visits by appointment</span>
+                </p>
+              </div>
+            </div>
+
+            {/* Map */}
+            <div
+              className="contact-card rounded-2xl overflow-hidden h-64"
+              style={{ border: '1px solid var(--border)' }}
+            >
+              <iframe
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3621.0!2d67.1797885!3d24.8966255!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3eb339dd6571f14d%3A0xc8d24e89a7d6a341!2sStar%20Crescent%20Lawn%20A!5e0!3m2!1sen!2s!4v1642688000000!5m2!1sen!2s"
+                width="100%"
+                height="100%"
+                style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg)' }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+              />
+            </div>
+          </div>
         </div>
       </div>
     </section>

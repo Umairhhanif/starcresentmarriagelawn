@@ -1,13 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import Image from 'next/image';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { useEffect, useRef } from 'react';
-import FadeInView from './animations/FadeInView';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -58,9 +56,16 @@ export default function Gallery() {
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
+  const sectionRef = useRef<HTMLElement>(null);
+  const headerRef = useRef<HTMLDivElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const row1Ref = useRef<HTMLDivElement>(null);
+  const row2Ref = useRef<HTMLDivElement>(null);
+  const row3Ref = useRef<HTMLDivElement>(null);
+
   const openLightbox = (index: number) => setSelectedImage(index);
   const closeLightbox = () => setSelectedImage(null);
-  
+
   const nextImage = () => {
     if (selectedImage !== null) {
       setSelectedImage((selectedImage + 1) % galleryImages.length);
@@ -73,16 +78,31 @@ export default function Gallery() {
     }
   };
 
-  const containerRef = useRef<HTMLDivElement>(null);
-  const row1Ref = useRef<HTMLDivElement>(null);
-  const row2Ref = useRef<HTMLDivElement>(null);
-  const row3Ref = useRef<HTMLDivElement>(null);
-
   useEffect(() => {
-    if (!containerRef.current) return;
+    if (!sectionRef.current || !containerRef.current) return;
 
     const ctx = gsap.context(() => {
-      // Row 1 (Center) - moves slightly slower than scroll
+      // Header animation
+      if (headerRef.current) {
+        const elements = headerRef.current.querySelectorAll('.header-element');
+        gsap.fromTo(
+          elements,
+          { y: 60, opacity: 0 },
+          {
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            stagger: 0.15,
+            ease: 'power3.out',
+            scrollTrigger: {
+              trigger: headerRef.current,
+              start: 'top 80%',
+            },
+          }
+        );
+      }
+
+      // Parallax rows
       if (row1Ref.current) {
         gsap.to(row1Ref.current, {
           y: 50,
@@ -96,7 +116,6 @@ export default function Gallery() {
         });
       }
 
-      // Row 2 - moves faster up
       if (row2Ref.current) {
         gsap.to(row2Ref.current, {
           y: -100,
@@ -110,7 +129,6 @@ export default function Gallery() {
         });
       }
 
-      // Row 3 - moves even faster up
       if (row3Ref.current) {
         gsap.to(row3Ref.current, {
           y: -150,
@@ -123,202 +141,219 @@ export default function Gallery() {
           },
         });
       }
-    }, containerRef);
+
+      // Gallery images entrance animation
+      const allImages = containerRef.current.querySelectorAll('.gallery-image');
+      gsap.fromTo(
+        allImages,
+        {
+          scale: 0.8,
+          opacity: 0,
+          rotateY: -30
+        },
+        {
+          scale: 1,
+          opacity: 1,
+          rotateY: 0,
+          duration: 1,
+          stagger: {
+            amount: 1.2,
+            from: 'center',
+            ease: 'power2.out'
+          },
+          ease: 'power3.out',
+          scrollTrigger: {
+            trigger: containerRef.current,
+            start: 'top 70%',
+          },
+        }
+      );
+    }, sectionRef);
 
     return () => ctx.revert();
   }, []);
 
   return (
-    <section 
-      id="gallery" 
+    <section
+      ref={sectionRef}
+      id="gallery"
       className="py-24 md:py-32 overflow-hidden"
       style={{ backgroundColor: 'var(--surface)' }}
     >
-      <div ref={containerRef} className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-6">
         {/* Header */}
-        <div className="text-center mb-16">
-          <FadeInView>
-            <span 
-              className="text-sm tracking-[0.3em] uppercase mb-4 block"
-              style={{ color: 'var(--primary)' }}
-            >
-              Our Gallery
-            </span>
-          </FadeInView>
+        <div ref={headerRef} className="text-center mb-16">
+          <span
+            className="header-element text-sm tracking-[0.3em] uppercase mb-4 block"
+            style={{ color: 'var(--primary)' }}
+          >
+            Our Gallery
+          </span>
 
-          <FadeInView delay={0.1}>
-            <h2 
-              className="text-4xl md:text-5xl lg:text-6xl font-light mb-6"
-              style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
-            >
-              A Glimpse of
-              <br />
-              <span style={{ color: 'var(--primary)' }}>Elegance</span>
-            </h2>
-          </FadeInView>
+          <h2
+            className="header-element text-4xl md:text-5xl lg:text-6xl font-light mb-6"
+            style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
+          >
+            A Glimpse of
+            <br />
+            <span style={{ color: 'var(--primary)' }}>Elegance</span>
+          </h2>
 
-          <FadeInView delay={0.2}>
-            <p 
-              className="text-lg max-w-2xl mx-auto"
-              style={{ color: 'var(--text-muted)' }}
-            >
-              Explore our stunning venue through the lens of countless 
-              celebrations we&apos;ve been honored to host.
-            </p>
-          </FadeInView>
+          <p
+            className="header-element text-lg max-w-2xl mx-auto"
+            style={{ color: 'var(--text-muted)' }}
+          >
+            Explore our stunning venue through the lens of countless
+            celebrations we&apos;ve been honored to host.
+          </p>
         </div>
 
         {/* Fountain Gallery - Cascading layout */}
-        <div className="relative">
+        <div ref={containerRef} className="relative">
           {/* Center Hero Image */}
           <div ref={row1Ref} className="flex justify-center mb-8">
-            <FadeInView delay={0}>
+            <motion.div
+              className="gallery-image relative overflow-hidden rounded-2xl cursor-pointer"
+              style={{ width: '500px', height: '350px' }}
+              onHoverStart={() => setHoveredIndex(0)}
+              onHoverEnd={() => setHoveredIndex(null)}
+              onClick={() => openLightbox(0)}
+              whileHover={{ y: -10 }}
+              transition={{ type: 'spring', stiffness: 300 }}
+            >
+              <Image
+                src={galleryImages[0].src}
+                alt={galleryImages[0].title}
+                fill
+                className="object-cover transition-transform duration-500"
+                style={{ transform: hoveredIndex === 0 ? 'scale(1.1)' : 'scale(1)' }}
+              />
               <motion.div
-                className="relative overflow-hidden rounded-2xl cursor-pointer"
-                style={{ width: '500px', height: '350px' }}
-                onHoverStart={() => setHoveredIndex(0)}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: hoveredIndex === 0 ? 1 : 0 }}
+                className="absolute inset-0 flex flex-col items-center justify-center"
+                style={{ background: 'linear-gradient(to top, rgba(13,13,13,0.9), rgba(13,13,13,0.3))' }}
+              >
+                <span className="text-2xl font-medium" style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}>
+                  {galleryImages[0].title}
+                </span>
+                <span className="text-sm mt-1" style={{ color: 'var(--primary)' }}>{galleryImages[0].category}</span>
+              </motion.div>
+              <div className="absolute inset-0 border-2 rounded-2xl transition-all duration-300" style={{ borderColor: hoveredIndex === 0 ? 'var(--primary)' : 'transparent' }} />
+            </motion.div>
+          </div>
+
+          {/* First Cascade Row - 2 images */}
+          <div ref={row2Ref} className="flex justify-center gap-6 mb-6">
+            {[1, 2].map((idx, i) => (
+              <motion.div
+                key={idx}
+                className="gallery-image relative overflow-hidden rounded-xl cursor-pointer"
+                style={{
+                  width: '280px',
+                  height: '200px',
+                  marginTop: i === 0 ? '20px' : '40px'
+                }}
+                onHoverStart={() => setHoveredIndex(idx)}
                 onHoverEnd={() => setHoveredIndex(null)}
-                onClick={() => openLightbox(0)}
-                whileHover={{ y: -10 }}
+                onClick={() => openLightbox(idx)}
+                whileHover={{ y: -8, scale: 1.02 }}
                 transition={{ type: 'spring', stiffness: 300 }}
               >
                 <Image
-                  src={galleryImages[0].src}
-                  alt={galleryImages[0].title}
+                  src={galleryImages[idx].src}
+                  alt={galleryImages[idx].title}
                   fill
                   className="object-cover transition-transform duration-500"
-                  style={{ transform: hoveredIndex === 0 ? 'scale(1.1)' : 'scale(1)' }}
+                  style={{ transform: hoveredIndex === idx ? 'scale(1.1)' : 'scale(1)' }}
                 />
                 <motion.div
                   initial={{ opacity: 0 }}
-                  animate={{ opacity: hoveredIndex === 0 ? 1 : 0 }}
+                  animate={{ opacity: hoveredIndex === idx ? 1 : 0 }}
                   className="absolute inset-0 flex flex-col items-center justify-center"
-                  style={{ background: 'linear-gradient(to top, rgba(10,10,15,0.9), rgba(10,10,15,0.3))' }}
+                  style={{ background: 'linear-gradient(to top, rgba(13,13,13,0.9), rgba(13,13,13,0.5))' }}
                 >
-                  <span className="text-2xl font-medium" style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}>
-                    {galleryImages[0].title}
-                  </span>
-                  <span className="text-sm mt-1" style={{ color: 'var(--primary)' }}>{galleryImages[0].category}</span>
+                  <span className="text-lg font-medium" style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}>{galleryImages[idx].title}</span>
+                  <span className="text-sm" style={{ color: 'var(--primary)' }}>{galleryImages[idx].category}</span>
                 </motion.div>
-                <div className="absolute inset-0 border-2 rounded-2xl transition-all duration-300" style={{ borderColor: hoveredIndex === 0 ? 'var(--primary)' : 'rgba(var(--primary-rgb), 0.3)' }} />
+                <div className="absolute inset-0 border rounded-xl transition-all duration-300" style={{ borderColor: hoveredIndex === idx ? 'var(--primary)' : 'transparent' }} />
               </motion.div>
-            </FadeInView>
-          </div>
-
-          {/* First Cascade Row - 2 images flowing outward */}
-          <div ref={row2Ref} className="flex justify-center gap-6 mb-6">
-            {[1, 2].map((idx, i) => (
-              <FadeInView key={idx} delay={0.1 + i * 0.1}>
-                <motion.div
-                  className="relative overflow-hidden rounded-xl cursor-pointer"
-                  style={{ 
-                    width: '280px', 
-                    height: '200px',
-                    marginTop: i === 0 ? '20px' : '40px'
-                  }}
-                  onHoverStart={() => setHoveredIndex(idx)}
-                  onHoverEnd={() => setHoveredIndex(null)}
-                  onClick={() => openLightbox(idx)}
-                  whileHover={{ y: -8, scale: 1.02 }}
-                  transition={{ type: 'spring', stiffness: 300 }}
-                >
-                  <Image
-                    src={galleryImages[idx].src}
-                    alt={galleryImages[idx].title}
-                    fill
-                    className="object-cover transition-transform duration-500"
-                    style={{ transform: hoveredIndex === idx ? 'scale(1.1)' : 'scale(1)' }}
-                  />
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: hoveredIndex === idx ? 1 : 0 }}
-                    className="absolute inset-0 flex flex-col items-center justify-center"
-                    style={{ background: 'linear-gradient(to top, rgba(10,10,15,0.9), rgba(10,10,15,0.5))' }}
-                  >
-                    <span className="text-lg font-medium" style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}>{galleryImages[idx].title}</span>
-                    <span className="text-sm" style={{ color: 'var(--primary)' }}>{galleryImages[idx].category}</span>
-                  </motion.div>
-                  <div className="absolute inset-0 border rounded-xl transition-all duration-300" style={{ borderColor: hoveredIndex === idx ? 'var(--primary)' : 'transparent' }} />
-                </motion.div>
-              </FadeInView>
             ))}
           </div>
 
           {/* Second Cascade Row - 3 images */}
           <div ref={row3Ref} className="flex justify-center gap-5 mb-6">
             {[3, 4, 5].map((idx, i) => (
-              <FadeInView key={idx} delay={0.2 + i * 0.1}>
+              <motion.div
+                key={idx}
+                className="gallery-image relative overflow-hidden rounded-xl cursor-pointer"
+                style={{
+                  width: '240px',
+                  height: '180px',
+                  marginTop: i === 1 ? '0px' : i === 0 ? '30px' : '50px'
+                }}
+                onHoverStart={() => setHoveredIndex(idx)}
+                onHoverEnd={() => setHoveredIndex(null)}
+                onClick={() => openLightbox(idx)}
+                whileHover={{ y: -8, scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 300 }}
+              >
+                <Image
+                  src={galleryImages[idx].src}
+                  alt={galleryImages[idx].title}
+                  fill
+                  className="object-cover transition-transform duration-500"
+                  style={{ transform: hoveredIndex === idx ? 'scale(1.1)' : 'scale(1)' }}
+                />
                 <motion.div
-                  className="relative overflow-hidden rounded-xl cursor-pointer"
-                  style={{ 
-                    width: '240px', 
-                    height: '180px',
-                    marginTop: i === 1 ? '0px' : i === 0 ? '30px' : '50px'
-                  }}
-                  onHoverStart={() => setHoveredIndex(idx)}
-                  onHoverEnd={() => setHoveredIndex(null)}
-                  onClick={() => openLightbox(idx)}
-                  whileHover={{ y: -8, scale: 1.02 }}
-                  transition={{ type: 'spring', stiffness: 300 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: hoveredIndex === idx ? 1 : 0 }}
+                  className="absolute inset-0 flex flex-col items-center justify-center"
+                  style={{ background: 'linear-gradient(to top, rgba(13,13,13,0.9), rgba(13,13,13,0.5))' }}
                 >
-                  <Image
-                    src={galleryImages[idx].src}
-                    alt={galleryImages[idx].title}
-                    fill
-                    className="object-cover transition-transform duration-500"
-                    style={{ transform: hoveredIndex === idx ? 'scale(1.1)' : 'scale(1)' }}
-                  />
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: hoveredIndex === idx ? 1 : 0 }}
-                    className="absolute inset-0 flex flex-col items-center justify-center"
-                    style={{ background: 'linear-gradient(to top, rgba(10,10,15,0.9), rgba(10,10,15,0.5))' }}
-                  >
-                    <span className="text-lg font-medium" style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}>{galleryImages[idx].title}</span>
-                    <span className="text-sm" style={{ color: 'var(--primary)' }}>{galleryImages[idx].category}</span>
-                  </motion.div>
-                  <div className="absolute inset-0 border rounded-xl transition-all duration-300" style={{ borderColor: hoveredIndex === idx ? 'var(--primary)' : 'transparent' }} />
+                  <span className="text-lg font-medium" style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}>{galleryImages[idx].title}</span>
+                  <span className="text-sm" style={{ color: 'var(--primary)' }}>{galleryImages[idx].category}</span>
                 </motion.div>
-              </FadeInView>
+                <div className="absolute inset-0 border rounded-xl transition-all duration-300" style={{ borderColor: hoveredIndex === idx ? 'var(--primary)' : 'transparent' }} />
+              </motion.div>
             ))}
           </div>
 
-          {/* Third Cascade Row - 2 images at bottom */}
+          {/* Third Cascade Row - 2 images */}
           <div className="flex justify-center gap-6">
             {[6, 7].map((idx, i) => (
-              <FadeInView key={idx} delay={0.3 + i * 0.1}>
+              <motion.div
+                key={idx}
+                className="gallery-image relative overflow-hidden rounded-xl cursor-pointer"
+                style={{
+                  width: '220px',
+                  height: '160px',
+                  marginTop: i === 0 ? '40px' : '20px'
+                }}
+                onHoverStart={() => setHoveredIndex(idx)}
+                onHoverEnd={() => setHoveredIndex(null)}
+                onClick={() => openLightbox(idx)}
+                whileHover={{ y: -8, scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 300 }}
+              >
+                <Image
+                  src={galleryImages[idx].src}
+                  alt={galleryImages[idx].title}
+                  fill
+                  className="object-cover transition-transform duration-500"
+                  style={{ transform: hoveredIndex === idx ? 'scale(1.1)' : 'scale(1)' }}
+                />
                 <motion.div
-                  className="relative overflow-hidden rounded-xl cursor-pointer"
-                  style={{ 
-                    width: '220px', 
-                    height: '160px',
-                    marginTop: i === 0 ? '40px' : '20px'
-                  }}
-                  onHoverStart={() => setHoveredIndex(idx)}
-                  onHoverEnd={() => setHoveredIndex(null)}
-                  onClick={() => openLightbox(idx)}
-                  whileHover={{ y: -8, scale: 1.02 }}
-                  transition={{ type: 'spring', stiffness: 300 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: hoveredIndex === idx ? 1 : 0 }}
+                  className="absolute inset-0 flex flex-col items-center justify-center"
+                  style={{ background: 'linear-gradient(to top, rgba(13,13,13,0.9), rgba(13,13,13,0.5))' }}
                 >
-                  <Image
-                    src={galleryImages[idx].src}
-                    alt={galleryImages[idx].title}
-                    fill
-                    className="object-cover transition-transform duration-500"
-                    style={{ transform: hoveredIndex === idx ? 'scale(1.1)' : 'scale(1)' }}
-                  />
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: hoveredIndex === idx ? 1 : 0 }}
-                    className="absolute inset-0 flex flex-col items-center justify-center"
-                    style={{ background: 'linear-gradient(to top, rgba(10,10,15,0.9), rgba(10,10,15,0.5))' }}
-                  >
-                    <span className="text-lg font-medium" style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}>{galleryImages[idx].title}</span>
-                    <span className="text-sm" style={{ color: 'var(--primary)' }}>{galleryImages[idx].category}</span>
-                  </motion.div>
-                  <div className="absolute inset-0 border rounded-xl transition-all duration-300" style={{ borderColor: hoveredIndex === idx ? 'var(--primary)' : 'transparent' }} />
+                  <span className="text-lg font-medium" style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}>{galleryImages[idx].title}</span>
+                  <span className="text-sm" style={{ color: 'var(--primary)' }}>{galleryImages[idx].category}</span>
                 </motion.div>
-              </FadeInView>
+                <div className="absolute inset-0 border rounded-xl transition-all duration-300" style={{ borderColor: hoveredIndex === idx ? 'var(--primary)' : 'transparent' }} />
+              </motion.div>
             ))}
           </div>
         </div>
@@ -332,10 +367,9 @@ export default function Gallery() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-50 flex items-center justify-center p-4"
-            style={{ backgroundColor: 'rgba(10, 10, 15, 0.95)' }}
+            style={{ backgroundColor: 'rgba(13, 13, 13, 0.95)' }}
             onClick={closeLightbox}
           >
-            {/* Close button */}
             <button
               onClick={closeLightbox}
               className="absolute top-6 right-6 p-2 rounded-full cursor-pointer hover:bg-white/10 transition-colors"
@@ -344,7 +378,6 @@ export default function Gallery() {
               <X size={32} />
             </button>
 
-            {/* Navigation */}
             <button
               onClick={(e) => { e.stopPropagation(); prevImage(); }}
               className="absolute left-6 p-2 rounded-full cursor-pointer hover:bg-white/10 transition-colors"
@@ -360,7 +393,6 @@ export default function Gallery() {
               <ChevronRight size={40} />
             </button>
 
-            {/* Image */}
             <motion.div
               key={selectedImage}
               initial={{ opacity: 0, scale: 0.9 }}
@@ -377,9 +409,8 @@ export default function Gallery() {
               />
             </motion.div>
 
-            {/* Caption */}
             <div className="absolute bottom-6 left-1/2 -translate-x-1/2 text-center">
-              <h3 
+              <h3
                 className="text-xl mb-1"
                 style={{ fontFamily: 'var(--font-display)', color: 'var(--text-primary)' }}
               >
