@@ -117,10 +117,11 @@ export default function Hero() {
       <div className="absolute inset-0 w-full h-[140%] -top-[20%]">
         <div ref={imageRef} className="w-full h-full relative">
           <Image
-            src="https://lh3.googleusercontent.com/gps-cs-s/AG0ilSzhHLaEt94YtqJRIUJTyZeH4G96YcrMj0B8nZrJKgEvdfUJdZrWO_XfuYZmC2z29WLyzH1rZ3G6o6GBEeW7XztwACMu3VFlJjWKWBy7DPIV1pC7fuiTsx4ZAuP1q9dq1LaZtZm6Rw=s1920-k-no"
+            src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=2074&auto=format&fit=crop"
             alt="Star Crescent Marriage Lawn"
             fill
             priority
+            sizes="100vw"
             className="object-cover"
           />
           {/* Gradient overlay with texture */}

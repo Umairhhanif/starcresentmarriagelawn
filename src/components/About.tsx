@@ -284,9 +284,10 @@ export default function About() {
                 }}
               >
                 <Image
-                  src="https://lh3.googleusercontent.com/gps-cs-s/AG0ilSzeTFgvGVcn2V4LAEoFnEJ_mCt5NK4GwUb78PVQDZdEFWJFMhS67Z_F1-8CVsj2p9iQm4-6OrtjYK6mt7ND6-qLAvW1ADWYE0hfV4qINfvqzc7nYyqd5mj7oUSXYph0GRONgSoRtpqxaFsJ=w800-h1200-k-no"
+                  src="https://images.unsplash.com/photo-1519741497674-611481863552?q=80&w=2070&auto=format&fit=crop"
                   alt="Star Crescent Lawn Interior"
                   fill
+                  sizes="(max-width: 1024px) 100vw, 60vw"
                   className="object-cover"
                 />
                 {/* Subtle overlay */}

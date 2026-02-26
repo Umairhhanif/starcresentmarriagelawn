@@ -11,42 +11,42 @@ gsap.registerPlugin(ScrollTrigger);
 
 const galleryImages = [
   {
-    src: 'https://lh3.googleusercontent.com/gps-cs-s/AG0ilSzwEs7jgtVuGuvOm-_RgcGniMt_4nRzrY8CxHYIRLctpVa68JUpL9KnHcTEYFjrArV8t3_GN1kl3uKcRAMcCZeXlq__xagfsuKKN3_wTDsecbhsvksbX64gyYKiRcbCa04I737koQ=s800-k-no',
+    src: 'https://images.unsplash.com/photo-1511795409834-ef04bbd61622?q=80&w=2069&auto=format&fit=crop',
     title: 'Grand Entrance',
     category: 'Exterior',
   },
   {
-    src: 'https://lh3.googleusercontent.com/gps-cs-s/AG0ilSzeTFgvGVcn2V4LAEoFnEJ_mCt5NK4GwUb78PVQDZdEFWJFMhS67Z_F1-8CVsj2p9iQm4-6OrtjYK6mt7ND6-qLAvW1ADWYE0hfV4qINfvqzc7nYyqd5mj7oUSXYph0GRONgSoRtpqxaFsJ=s800-k-no',
+    src: 'https://images.unsplash.com/photo-1464366400600-7168b8af9bc3?q=80&w=1941&auto=format&fit=crop',
     title: 'Wedding Stage',
     category: 'Interior',
   },
   {
-    src: 'https://lh3.googleusercontent.com/gps-cs-s/AG0ilSy8_cW_gHXGNkkgOXtQgL3ceeZ35qC3mLwarrvKZDKbImY_DMXcLoeAwdcdS7QkkuSQB1NAA4k1bCBuyGI13eKJG4rc7Rx0z_bRxwyv3QBEzGayf9PYKPL8L04nS8oyGbJBqAjI7Q=s800-k-no',
+    src: 'https://images.unsplash.com/photo-1522673607200-1648832cee44?q=80&w=2072&auto=format&fit=crop',
     title: 'Lawn Setup',
     category: 'Events',
   },
   {
-    src: 'https://lh3.googleusercontent.com/gps-cs-s/AG0ilSzA_uk5mM0mKN0LvUrETwFD9lkO-EzboPIthyaTH6kHr5JdfQr6ECuRchWy_CkE_1NTGxJDeq2ooiVLgLzGKqfov7HTz9ocxpeYaK36oIObGU0nLa8tmeLwu97tnWZWaobZU6AI=s800-k-no',
+    src: 'https://images.unsplash.com/photo-1532712938310-34cb3982ef74?q=80&w=2070&auto=format&fit=crop',
     title: 'Event Decor',
     category: 'Events',
   },
   {
-    src: 'https://lh3.googleusercontent.com/gps-cs-s/AG0ilSzhHLaEt94YtqJRIUJTyZeH4G96YcrMj0B8nZrJKgEvdfUJdZrWO_XfuYZmC2z29WLyzH1rZ3G6o6GBEeW7XztwACMu3VFlJjWKWBy7DPIV1pC7fuiTsx4ZAuP1q9dq1LaZtZm6Rw=s800-k-no',
+    src: 'https://images.unsplash.com/photo-1549417229-aa67d3263c09?q=80&w=2070&auto=format&fit=crop',
     title: 'Aerial View',
     category: 'Exterior',
   },
   {
-    src: 'https://lh3.googleusercontent.com/gps-cs-s/AG0ilSw96kPeqRMF-u-FR9J6gBdEaovFBHm6VZF_HLldKhubco_AkvRfeeXmw6wuRRvUFpXQYpPTHDv9ctThAyH_1XA0kBQODpouLczJRZsvSKKx2pTT0ZNOl68KH9ckOtYH5TLRT5uU=s800-k-no',
+    src: 'https://images.unsplash.com/photo-1507676184212-d03ab07a01bf?q=80&w=2069&auto=format&fit=crop',
     title: 'Night Ambiance',
     category: 'Interior',
   },
   {
-    src: 'https://lh3.googleusercontent.com/gps-cs-s/AG0ilSzBugWdrLK26u3YXcJtzbdhD9LG28vCQ6fEugy4EdoSCNgFoo8C-gC33OJGjZfpbI26W1RVx0T21Kbs2RcG7rgenYoYcOwCa8kMgkCamahaFGM1DmJB2KonRokzJOvuRnsPIEWF=s800-k-no',
+    src: 'https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=2074&auto=format&fit=crop',
     title: 'Banquet Hall',
     category: 'Interior',
   },
   {
-    src: 'https://lh3.googleusercontent.com/gps-cs-s/AG0ilSy2yZgmNzu_pPaextESfUe37SgzvIkB-uLT9NkLwsobPQ9bjnyQPcVQiiiOxfrcLLEh8BXBcy3oZuIsXICOlFZLTN-t9NU2Tid-GezA7Y6Gp_3tEH8-lYB71p7pasHiNT3vSAMgBg=s800-k-no',
+    src: 'https://images.unsplash.com/photo-1510076857177-74700760f498?q=80&w=2072&auto=format&fit=crop',
     title: 'Table Setting',
     category: 'Events',
   },
@@ -227,6 +227,7 @@ export default function Gallery() {
                 src={galleryImages[0].src}
                 alt={galleryImages[0].title}
                 fill
+                sizes="(max-width: 768px) 100vw, 500px"
                 className="object-cover transition-transform duration-500"
                 style={{ transform: hoveredIndex === 0 ? 'scale(1.1)' : 'scale(1)' }}
               />
@@ -266,6 +267,7 @@ export default function Gallery() {
                   src={galleryImages[idx].src}
                   alt={galleryImages[idx].title}
                   fill
+                  sizes="(max-width: 768px) 100vw, 280px"
                   className="object-cover transition-transform duration-500"
                   style={{ transform: hoveredIndex === idx ? 'scale(1.1)' : 'scale(1)' }}
                 />
@@ -304,6 +306,7 @@ export default function Gallery() {
                   src={galleryImages[idx].src}
                   alt={galleryImages[idx].title}
                   fill
+                  sizes="(max-width: 768px) 100vw, 240px"
                   className="object-cover transition-transform duration-500"
                   style={{ transform: hoveredIndex === idx ? 'scale(1.1)' : 'scale(1)' }}
                 />
@@ -342,6 +345,7 @@ export default function Gallery() {
                   src={galleryImages[idx].src}
                   alt={galleryImages[idx].title}
                   fill
+                  sizes="(max-width: 768px) 100vw, 220px"
                   className="object-cover transition-transform duration-500"
                   style={{ transform: hoveredIndex === idx ? 'scale(1.1)' : 'scale(1)' }}
                 />
@@ -407,6 +411,7 @@ export default function Gallery() {
                 src={galleryImages[selectedImage].src}
                 alt={galleryImages[selectedImage].title}
                 fill
+                sizes="100vw"
                 className="object-contain"
               />
             </motion.div>

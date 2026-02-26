@@ -1,7 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx skills:*)"
+      "Bash(npx skills:*)",
+      "WebFetch(domain:images.unsplash.com)",
+      "WebFetch(domain:maps.app.goo.gl)",
+      "WebFetch(domain:www.google.com)",
+      "WebSearch",
+      "WebFetch(domain:nikaah.pk)",
+      "WebFetch(domain:www.facebook.com)"
     ]
   }
 }
