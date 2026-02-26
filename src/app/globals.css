@@ -338,16 +338,7 @@ body::before {
   }
 }
 
-/* Custom cursor */
-@media (pointer: fine) {
-  body {
-    cursor: none;
-  }
-
-  a, button, [role="button"], input, textarea {
-    cursor: none;
-  }
-}
+/* Default cursor - custom cursor disabled */
 
 /* Reveal animation */
 @keyframes reveal {
