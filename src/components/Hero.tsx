@@ -117,7 +117,7 @@ export default function Hero() {
       <div className="absolute inset-0 w-full h-[140%] -top-[20%]">
         <div ref={imageRef} className="w-full h-full relative">
           <Image
-            src="https://images.unsplash.com/photo-1519167758481-83f550bb49b3?q=80&w=2074&auto=format&fit=crop"
+            src="https://lh3.googleusercontent.com/gps-cs-s/AHVAwepRaWUk3W_hlTZ9s9uT-Ge0Bx-S0lRN1GxgjmM0pPgl3508JKLYlFEW-JpxjXjLuM1r9-kBNqi6xINgVJQ8gtPTvLQHsZ39VQrbJ5PW6PYU6Cv8oWucJYKJhZhLIyuZzNh5sN-TkQ=w1200-h800-k-no"
             alt="Star Crescent Marriage Lawn"
             fill
             priority
